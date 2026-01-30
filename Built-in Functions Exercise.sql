@@ -1,0 +1,101 @@
+-- Using Database soft_uni
+-- 01
+select first_name, last_name from employees
+where lower(first_name) like 'sa%'
+order by employee_id asc;
+
+-- 02
+select first_name, last_name from employees
+where lower(last_name) like '%ei%'
+order by employee_id asc;
+
+-- 03
+select first_name from employees
+where department_id in (3, 10) and year(hire_date) between 1995 and 2005
+order by employee_id asc;
+
+-- 04
+select first_name, last_name from employees
+where job_title not like '%engineer%'
+order by employee_id asc;
+
+-- 05
+select name from towns
+where char_length(name) >= 5 and char_length(name) <= 6
+order by name asc;
+
+-- 06
+select town_id, name from towns
+where lower(left(name, 1)) in ('m', 'k', 'b', 'e')
+order by name asc;
+
+-- 07
+select town_id, name from towns
+where lower(substring(name, 1, 1)) not in ('r', 'b', 'd')
+order by name asc;
+
+-- 08
+create view v_employees_hired_after_2000 as (
+select first_name, last_name from employees
+where year(hire_date) > 2000
+);
+
+-- 09
+select first_name, last_name from employees
+where char_length(last_name) = 5;
+
+-- Using Database geography
+-- 10
+-- option 1
+select country_name, iso_code from countries
+where lower(country_name) like '%a%a%a%'
+order by iso_code asc;
+
+-- option 2
+select country_name, iso_code from countries
+where lower(char_length(country_name)) - char_length(replace(lower(country_name), 'a', '')) >= 3
+order by iso_code asc;
+
+-- 11
+select peak_name, river_name, concat(substring(lower(peak_name), 1, char_length(peak_name)-1), lower(river_name)) as mix from peaks, rivers
+where lower(right(peak_name, 1)) = lower(left(river_name, 1))
+order by mix asc;
+
+-- Using Database diablo
+-- 12
+select name, date_format(start, '%Y-%m-%d') from games
+where year(start) >= 2011 and year(start) <= 2012
+order by start asc, name asc
+limit 50;
+
+-- 13
+select user_name, substring_index(email, '@', -1) as 'email provider' from users
+order by `email provider` asc, user_name asc;
+
+-- 14
+select user_name, ip_address from users
+where ip_address like '___.1%.%.___'
+order by user_name asc;
+
+-- 15
+select `name`,
+ case 
+ when hour(start) >= 0 and hour(start) < 12 then 'Morning'
+ when hour(start) >= 12 and hour(start) < 18 then 'Afternoon'
+ when hour(start) >= 18 and hour(start) < 24 then 'Evening'
+ end as 'Part of the Day',
+ case
+ when duration <= 3 then 'Extra Short'
+ when duration >= 3 and duration <= 6 then 'Short'
+ when duration >= 6 and duration <= 10 then 'Long'
+ else 'Extra Long'
+ end as Duration
+ from games;
+  
+-- Using Database orders
+-- 16
+select product_name,
+order_date,
+date_add(order_date, interval 3 day) as pay_due,
+date_add(order_date, interval 1 month) as deliver_due
+from orders;
